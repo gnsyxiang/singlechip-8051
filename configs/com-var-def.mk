@@ -55,6 +55,8 @@ TST_DIR ?= test
 DEM_DIR ?= demo
 CON_DIR ?= configs
 
+ROOT	?= $(shell pwd)
+
 # --------
 # compiler
 # --------
@@ -72,9 +74,12 @@ endif
 TARGET_SYSTEM ?= c51
 
 ifeq ($(TARGET_SYSTEM)x, c51x)
-	GCC_PATH 	?= /home/uos/test/skills/singlechip-8051/src/install/bin/
+	SDCC_PATH 	?= $(ROOT)/src/install/
+	SDCC_BIN 	:= $(SDCC_PATH)/bin/
+	SDCC_INC 	:= $(SDCC_PATH)/share/sdcc/include
+	SDCC_LIB 	:= $(SDCC_PATH)/share/sdcc/lib
 
-	CROSS_TOOL 	:= $(GCC_PATH)
+	CROSS_TOOL 	:= $(SDCC_BIN)
 endif
 
 CFLAGS 	+= -mmcs51 --std-sdcc99
