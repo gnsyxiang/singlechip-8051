@@ -1,0 +1,32 @@
+{
+  "name": "singlechip-8051",
+  "version": "0.0.1",
+  "description": "Summary of the work of the 8051 single chip",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gnsyxiang/singlechip-8051.git"
+  },
+  "keywords": [
+    "gnsyxiang",
+    "8051",
+    "singlechip"
+  ],
+  "author": "zhenquan.qiu",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/gnsyxiang/singlechip-8051/issues"
+  },
+  "homepage": "https://github.com/gnsyxiang/singlechip-8051#readme",
+  "devDependencies": {
+    "cz-conventional-changelog": "^2.1.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
