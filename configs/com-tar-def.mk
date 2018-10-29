@@ -38,19 +38,29 @@ index-clean:
 .PHONY: all clean distclean debug
 #########################################################
 
-$(TARGET): $(TARGET).hex
+$(TARGET_LIB): $(OBJS)
+	$(ECHO) $(MSG_LD) $@
+	$(MKDIR) $(LIB_DIR)
+	$(SDCCLIB) $@ $^
+
+$(TARGET_DEMO): $(TARGET_DEMO).hex
 	objcopy -I ihex -O binary $< $@
 
-$(TARGET).hex: $(OBJ_IHX)
+$(TARGET_DEMO).hex: $(TST_IHX)
 	packihx $^ > $@
 
-$(OBJ_IHX): $(OBJ_REL)
-	$(CC) $(CFLAGS) $^ -o $@
+$(TST_IHX): $(TST_REL)
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
 
 # --------
 # make *.c
 # --------
 $(OBJS): $(OBJ_DIR)/%.rel : %.c
+	$(MKDIR) $(dir $@)
+	$(ECHO) $(MSG_CC) $<
+	$(CC) -c $(CFLAGS) $< -o $@
+
+$(TST_OBJ): $(OBJ_DIR)/%.rel : %.c
 	$(MKDIR) $(dir $@)
 	$(ECHO) $(MSG_CC) $<
 	$(CC) -c $(CFLAGS) $< -o $@

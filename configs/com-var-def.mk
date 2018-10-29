@@ -78,9 +78,17 @@ ifeq ($(TARGET_SYSTEM)x, c51)
 	CROSS_TOOL 	:= $(GCC_PATH)/$(GCC_NAME)
 endif
 
-CFLAGS 	+= -mmcs51 
+CFLAGS 	+= -mmcs51 --std-sdcc99
+
+# --model-small
+# --model-medium
+# --model-large
+# --model-huge
+
+CFLAGS 	+= --model-small
 
 CC 	 	:= $(CROSS_TOOL)sdcc
+SDCCLIB := $(CROSS_TOOL)sdcclib
 # CXX 	:= $(CROSS_TOOL)g++
 # STRIP  	:= $(CROSS_TOOL)strip
 

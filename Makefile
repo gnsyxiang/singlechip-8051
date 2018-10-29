@@ -25,28 +25,38 @@ include $(TO_TOP_DIR)/configs/com-var-def.mk
 # --------------
 # target setting
 # --------------
-TARGET 	?= main
+TARGET 		?= time.lib 
+TARGET_DEMO ?= main
+
+TARGET_LIB 	?= $(LIB_DIR)/$(TARGET)
 
 # ------
-# cflags
+# flags
 # ------
-CFLAGS 	:= -I$(INC_DIR)
+CFLAGS 	+= -I$(INC_DIR)
+
+LDFLAGS += -l$(TARGET) -L$(LIB_DIR)
 
 # -------
 # c files
 # -------
 SRC_C 	:= $(wildcard $(SRC_DIR)/*.c)
-SRC_C 	+= $(wildcard $(TST_DIR)/*.c)
 
 OBJ_REL := $(patsubst %.c, $(OBJ_DIR)/%.rel, $(SRC_C))
 OBJ_IHX := $(patsubst %.rel, %.ihx, $(OBJ_REL))
 OBJS  	?= $(OBJ_REL)
 
+TST_C 	:= $(wildcard $(TST_DIR)/*.c)
+
+TST_REL := $(patsubst %.c, $(OBJ_DIR)/%.rel, $(TST_C))
+TST_IHX := $(patsubst %.rel, %.ihx, $(TST_REL))
+TST_OBJ ?= $(TST_REL)
+
 ###########################################
-all: $(TARGET)
+all: $(TARGET_LIB) $(TARGET_DEMO)
 
 include $(TO_TOP_DIR)/configs/com-tar-def.mk
 
 debug:
-	$(ECHO) $(SRC_C)
+	$(ECHO) $(TST_OBJ)
 
