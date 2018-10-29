@@ -71,24 +71,43 @@ endif
 
 TARGET_SYSTEM ?= c51
 
-ifeq ($(TARGET_SYSTEM)x, c51)
-	GCC_PATH 	?=
-	GCC_NAME 	?=
+ifeq ($(TARGET_SYSTEM)x, c51x)
+	GCC_PATH 	?= /home/uos/test/skills/singlechip-8051/src/install/bin/
 
-	CROSS_TOOL 	:= $(GCC_PATH)/$(GCC_NAME)
+	CROSS_TOOL 	:= $(GCC_PATH)
 endif
 
 CFLAGS 	+= -mmcs51 --std-sdcc99
 
-# --model-small
-# --model-medium
+# --model-small:
+#  small模式，对应keil的SMALL模式，
+#  变量存在internal ram中，该模式需要变量总占用的空间小于256bit。
+#
+# --model-medium:
+#  medium模式，对应keil的COMPACT模式，变量存在external ram中。
+#
 # --model-large
 # --model-huge
-
+#  large和huge模式是一样的，变量也存在external ram中，
+#  不同的是，它可以切换bank。由于c51的最大寻址范围也就是FFFFH，即64K。
+#  所以如果要扩展64K以上的ram只能用bank切换的办法。
+#  bank切换办法是用一个特殊寄存器来切换bank，将LSB存在r0，MSB存在r1，
+#  bank号存在r2。然后用 __sdcc_banked_call来调用位于其他bank的函数，
+#  再用__sdcc_banked_ret返回当前函数。
 CFLAGS 	+= --model-small
+
+#--iram-size <Value>: 用来检查片内ram的使用情况
+#--xram-size <Value>: 用来检查外部ram的使用情况
+#--code-size <Value>: 用来检查rom的使用情况
+#--stack-size <Value>: 用来检查堆栈的使用情况
+# CFLAGS 	+= --iram-size 2
+
+# 可以用xstack选项指定external ram的一段空间作为栈区（通常是前256个字节），
+# 这样所有的可重入函数的变量和参数传递都会用堆栈来实现。
+# 通常默认的栈空间是在internal ram的后区。
+# CFLAGS += --xstack
 
 CC 	 	:= $(CROSS_TOOL)sdcc
 SDCCLIB := $(CROSS_TOOL)sdcclib
-# CXX 	:= $(CROSS_TOOL)g++
-# STRIP  	:= $(CROSS_TOOL)strip
+PACKIHX := $(CROSS_TOOL)packihx
 

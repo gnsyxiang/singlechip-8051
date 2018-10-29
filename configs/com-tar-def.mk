@@ -47,7 +47,7 @@ $(TARGET_DEMO): $(TARGET_DEMO).hex
 	objcopy -I ihex -O binary $< $@
 
 $(TARGET_DEMO).hex: $(TST_IHX)
-	packihx $^ > $@
+	$(PACKIHX) $^ > $@
 
 $(TST_IHX): $(TST_REL)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@

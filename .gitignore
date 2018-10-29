@@ -52,6 +52,9 @@ Mkfile.old
 dkms.conf
 
 node_modules/
+src/install/
+src/sdcc/
+
 main
 
 *.asm
@@ -70,4 +73,5 @@ main
 *.rel
 *.rst
 *.sym
+
 
