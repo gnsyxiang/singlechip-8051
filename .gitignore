@@ -52,3 +52,22 @@ Mkfile.old
 dkms.conf
 
 node_modules/
+main
+
+*.asm
+*.ihx
+*.lk
+*.lst
+*.mem
+*.rel
+*.rst
+*.sym
+*.asm
+*.ihx
+*.lk
+*.lst
+*.mem
+*.rel
+*.rst
+*.sym
+
