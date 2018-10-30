@@ -48,7 +48,7 @@ index-clean:
 .PHONY: all clean distclean debug
 #########################################################
 download-img:
-	./$(TOOLS_STCGAL).py -P stc15 $(TARGET_DEMO).hex
+	./$(TOOLS_STCGAL).py -P stc15 $(TARGET_DEMO)
 
 #########################################################
 init: clean-main
