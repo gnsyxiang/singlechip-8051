@@ -19,10 +19,11 @@
 # ===============================================================
 
 define cp-lib-inc
-	$(MKDIR) $(TO_TOP_DIR)/$(INC_DIR)/$(TARGET_LIB_NAME)
+	$(MKDIR) $(TO_TOP_DIR)/$(INC_DIR)/$(TARGET)
+	$(MKDIR) $(TO_TOP_DIR)/$(LIB_DIR)
 	\
 	$(CP) $(LIB_DIR)/$(TARGET_LIB_SO)* 	$(TO_TOP_DIR)/$(LIB_DIR)
-	$(CP) $(INC_DIR)/* 					$(TO_TOP_DIR)/$(INC_DIR)/$(TARGET_LIB_NAME)
+	$(CP) $(INC_DIR)/* 					$(TO_TOP_DIR)/$(INC_DIR)/$(TARGET)
 endef
 
 define run-dir-makefile-clean-distclean
