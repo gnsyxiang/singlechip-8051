@@ -19,12 +19,18 @@
 # ===============================================================
 
 clean:
-	$(RM) $(TARGET) $(TARGET).hex
+	$(run-dir-makefile-clean-distclean)
+	$(RM) $(TARGET_DEMO) $(TARGET_DEMO).hex
 	$(RM) $(OBJ_REL)
 	$(RM) $(OBJ_IHX)
 
 distclean: clean index-clean
+	$(run-dir-makefile-clean-distclean)
 	$(RM) $(OBJ_DIR)
+	$(RM) $(LIB_DIR)
+ifneq ($(TARGET)x, singlechip-8051x)
+	$(RM) $(CON_DIR)
+endif
 
 index: index-clean
 	$(ECHO) generate index
@@ -36,9 +42,13 @@ index-clean:
 	$(RM) tags
 
 .PHONY: all clean distclean debug
-#########################################################
 
-$(TARGET_LIB): $(OBJS)
+#########################################################
+depend:
+	$(RM) $(CON_DIR)
+	$(LN) $(TO_TOP_DIR)/$(CON_DIR) $(CON_DIR)
+
+$(TARGET_PATH): $(OBJS)
 	$(ECHO) $(MSG_LD) $@
 	$(MKDIR) $(LIB_DIR)
 	$(SDCCLIB) $@ $^
@@ -52,6 +62,7 @@ $(TARGET_DEMO).hex: $(TST_IHX)
 $(TST_IHX): $(TST_REL)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
 
+#########################################################
 # --------
 # make *.c
 # --------
