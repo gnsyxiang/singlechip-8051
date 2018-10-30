@@ -60,6 +60,14 @@ else
 	$(run-dir-makefile-make)
 endif
 
+init-lib:
+	$(ECHO) $(D)
+	$(MKDIR) $(SRC_DIR)/$(D)
+	$(MKDIR) $(SRC_DIR)/$(D)/$(SRC_DIR) \
+		     $(SRC_DIR)/$(D)/$(INC_DIR) \
+			 $(SRC_DIR)/$(D)/$(TST_DIR)
+	$(CP) $(SRC_DIR)/time/Makefile $(SRC_DIR)/$(D)
+
 #########################################################
 
 $(TARGET_PATH): $(OBJS)
