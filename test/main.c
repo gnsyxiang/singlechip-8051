@@ -21,7 +21,7 @@
 
 #include "stc15w404as.h"
 
-#include "time.h"
+#include <time/time.h>
 
 void main(void)
 {

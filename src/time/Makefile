@@ -55,8 +55,12 @@ TST_IHX := $(patsubst %.rel, %.ihx, $(TST_REL))
 TST_OBJ ?= $(TST_REL)
 
 ###########################################
-all: depend $(TARGET_PATH) $(TARGET_DEMO)
+all: init $(TARGET_PATH) $(TARGET_DEMO)
 	$(cp-lib-inc)
+ifneq ($(TOOLS_STCGAL).py, $(wildcard $(TOOLS_STCGAL).py))
+	$(RM) $(TOOLS_STCGAL).py
+	$(LN) $(TO_TOP_DIR)/tools/stcgal/$(TOOLS_STCGAL).py $(TOOLS_STCGAL).py
+endif
 
 include $(TO_TOP_DIR)/configs/com-tar-def.mk
 

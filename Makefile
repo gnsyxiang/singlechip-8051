@@ -18,12 +18,12 @@
 #     last modified: 29/10 2018 15:41
 # ===============================================================
 
-TO_TOP_DIR 	:= ./
+TO_TOP_DIR 	:= .
 
 include $(TO_TOP_DIR)/configs/com-var-def.mk
 include $(TO_TOP_DIR)/configs/com-rul-def.mk
 
-subdir-src	:= src/time
+subdir-src	:= tools src/time
 
 # --------------
 # target setting
@@ -58,11 +58,11 @@ TST_IHX := $(patsubst %.rel, %.ihx, $(TST_REL))
 TST_OBJ ?= $(TST_REL)
 
 ###########################################
-all: depend-lib $(TARGET_PATH) $(TARGET_DEMO)
-
-depend-lib:
-	$(MKDIR) $(LIB_DIR)
-	$(run-dir-makefile-make)
+all: init $(TARGET_PATH) $(TARGET_DEMO)
+ifneq ($(TOOLS_STCGAL).py, $(wildcard $(TOOLS_STCGAL).py))
+	$(RM) $(TOOLS_STCGAL).py
+	$(LN) $(TO_TOP_DIR)/tools/stcgal/$(TOOLS_STCGAL).py $(TOOLS_STCGAL).py
+endif
 
 include $(TO_TOP_DIR)/configs/com-tar-def.mk
 

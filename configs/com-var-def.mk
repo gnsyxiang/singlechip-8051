@@ -44,25 +44,33 @@ MKDIR 	:= mkdir -p
 LN 		:= ln -s
 CP 		:= cp -ar
 
+TAR_XJVF := tar xjvf
+
 # ----------
 # output dir
 # ----------
+ROOT	?= $(shell pwd)
+
 OBJ_DIR ?= objs
 LIB_DIR ?= lib
 INC_DIR ?= inc
 SRC_DIR ?= src
 TST_DIR ?= test
 DEM_DIR ?= demo
-CON_DIR ?= configs
 
-ROOT	?= $(shell pwd)
-ROOT 	:= ~/test/skills/singlechip-8051
+CON_DIR 	?= configs
+
+TOOLS 		 ?= tools
+TOOLS_STCGAL ?= stcgal
+TOOLS_SDCC 	 ?= sdcc
+
+INSTALL_DIR  ?= install
+INSTALL_PATH ?= $(ROOT)/$(INSTALL_DIR)
 
 # --------
 # compiler
 # --------
 CFLAGS 		:=
-LIB_CFLAGS 	:=
 LDFLAGS 	:=
 
 # DEBUG_SWITCH := debug
@@ -75,7 +83,9 @@ endif
 TARGET_SYSTEM ?= c51
 
 ifeq ($(TARGET_SYSTEM)x, c51x)
-	SDCC_PATH 	?= $(ROOT)/tools/install
+	COMPILER_PATH := ~/test/skills/singlechip-8051
+
+	SDCC_PATH 	?= $(COMPILER_PATH)/tools/install
 	SDCC_BIN 	:= $(SDCC_PATH)/bin/
 	SDCC_INC 	:= $(SDCC_PATH)/share/sdcc/include
 	SDCC_LIB 	:= $(SDCC_PATH)/share/sdcc/lib

@@ -51,27 +51,34 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+# xia add
+*.asm
+*.ihx
+*.lk
+*.lst
+*.mem
+*.rel
+*.rst
+*.sym
+*.asm
+*.ihx
+*.lk
+*.lst
+*.mem
+*.rel
+*.rst
+*.sym
+
+src/*/configs
+inc/*/*.h
+
 node_modules/
 tools/install/
 tools/sdcc/
+tools/stcgal/
 
 main
+stcgal.py
 
-*.asm
-*.ihx
-*.lk
-*.lst
-*.mem
-*.rel
-*.rst
-*.sym
-*.asm
-*.ihx
-*.lk
-*.lst
-*.mem
-*.rel
-*.rst
-*.sym
 
 
