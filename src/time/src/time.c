@@ -19,12 +19,16 @@
  */
 #include <stdio.h>
 
+#define SC_TIME_GB
+#include "time.h"
+#undef SC_TIME_GB
+
 void delay02s(void)
 {
     unsigned char i,j,k;
 
-    for(i=20; i>0; i--)
-        for(j=20; j>0; j--)
+    for(i=250; i>0; i--)
+        for(j=250; j>0; j--)
             for(k=248; k>0; k--);
 }
 

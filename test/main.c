@@ -19,18 +19,19 @@
  */
 #include <stdio.h>
 
+#include <time/time.h>
+
 #include "stc15w404as.h"
 
-#include <time/time.h>
+#define RED_LED     P5_5
 
 void main(void)
 {
     while (1) {
-
-        P1_0=0;
+        RED_LED = 0;
         delay02s();
 
-        P1_0=1;
+        RED_LED = 1;
         delay02s();
     }
 }
