@@ -52,8 +52,8 @@ Mkfile.old
 dkms.conf
 
 node_modules/
-src/install/
-src/sdcc/
+tools/install/
+tools/sdcc/
 
 main
 
