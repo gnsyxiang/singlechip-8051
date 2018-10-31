@@ -20,13 +20,16 @@
 #include <stdio.h>
 
 #include <time/time.h>
+#include <io/io.h>
 
-#include "stc15w404as.h"
+#include <stc15w404as.h>
 
 #define RED_LED     P5_5
 
 void main(void)
 {
+    io_init();
+
     while (1) {
         RED_LED = 0;
         delay02s();
