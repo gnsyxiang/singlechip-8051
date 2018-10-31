@@ -70,6 +70,11 @@ init-lib:
 
 #########################################################
 
+$(TARGET_LIB): $(TARGET_PATH) $(TARGET_PATH)-cp
+
+$(TARGET_PATH)-cp:
+	$(cp-lib-inc)
+
 $(TARGET_PATH): $(OBJS)
 	$(ECHO) $(MSG_LD) $@
 	$(MKDIR) $(LIB_DIR)

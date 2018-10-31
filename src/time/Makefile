@@ -55,7 +55,7 @@ TST_IHX := $(patsubst %.rel, %.ihx, $(TST_REL))
 TST_OBJ ?= $(TST_REL)
 
 ###########################################
-all: init $(TARGET_PATH) $(TARGET_DEMO)
+all: init $(TARGET_LIB) $(TARGET_DEMO)
 	$(cp-lib-inc)
 ifneq ($(TOOLS_STCGAL).py, $(wildcard $(TOOLS_STCGAL).py))
 	$(RM) $(TOOLS_STCGAL).py
