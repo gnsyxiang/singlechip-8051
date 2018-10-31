@@ -30,6 +30,10 @@ extern "C" {
 #define SC_TIME_EX
 #endif
 
+SC_TIME_EX void time0_init(void);
+SC_TIME_EX unsigned long time0_get_ticks(void);
+void timer0_ISR(void) __interrupt 1 __using 1;
+
 SC_TIME_EX void delay02s(void);
 
 #ifdef __cplusplus

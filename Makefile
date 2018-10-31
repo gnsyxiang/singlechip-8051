@@ -39,7 +39,7 @@ TARGET_PATH ?= $(LIB_DIR)/$(TARGET_LIB)
 # ------
 CFLAGS 	+= -I$(INC_DIR)
 
-LDFLAGS += -l$(TARGET_LIB) -ltime.so -lio.so
+LDFLAGS += -l$(TARGET_LIB) -ltime.so -lio.so -lled-drv.so
 LDFLAGS += -L$(LIB_DIR)
 
 # -------

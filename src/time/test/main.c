@@ -21,7 +21,7 @@
 
 #include <time/time.h>
 
-#include "stc15w404as.h"
+#include <stc15w404as.h>
 
 #define RED_LED     P5_5
 

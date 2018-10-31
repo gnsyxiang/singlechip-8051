@@ -21,21 +21,31 @@
 
 #include <time/time.h>
 #include <io/io.h>
+#include <led-drv/led-drv.h>
 
-#include <stc15w404as.h>
+#include <stc15wxxxx.h>
 
-#define RED_LED     P5_5
+#define DELAY_TIME_MS  (1 * 1000)
 
 void main(void)
 {
+    unsigned long ticks;
+    static unsigned long old_ticks;
+
     io_init();
+    led_init();
+    time0_init();
 
+    old_ticks = ticks = time0_get_ticks();
+
+    EA = 1;
+    
     while (1) {
-        RED_LED = 0;
-        delay02s();
-
-        RED_LED = 1;
-        delay02s();
+        ticks = time0_get_ticks();
+        if (ticks - old_ticks > DELAY_TIME_MS) {
+            old_ticks = ticks;
+            led_trigger();
+        }
     }
 }
 
