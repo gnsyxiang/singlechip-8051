@@ -19,7 +19,7 @@
  */
 #include <stdio.h>
 
-#include <stc15w404as.h>
+#include <stc15wxxxx.h>
 
 #define SC_LED_DRV_GB
 #include "led-drv.h"

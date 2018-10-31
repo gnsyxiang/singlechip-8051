@@ -19,7 +19,7 @@
  */
 #include <stdio.h>
 
-#include <stc15w404as.h>
+#include <stc15wxxxx.h>
 
 /*
  * 针对 IAP15W4K61S4，STC15W4K56S4 系列IO口初始化

@@ -80,5 +80,7 @@ tools/stcgal/
 main
 stcgal.py
 
+!inc/sdcc/compiler.h
+!inc/sdcc/lint.h
 
 
