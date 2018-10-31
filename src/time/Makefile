@@ -37,7 +37,8 @@ TARGET_PATH ?= $(LIB_DIR)/$(TARGET_LIB)
 # ------
 CFLAGS 	+= -I$(INC_DIR) -I$(TO_TOP_DIR)/$(INC_DIR)
 
-LDFLAGS += -l$(TARGET_LIB) -L$(LIB_DIR)
+LDFLAGS += -l$(TARGET_LIB)
+LDFLAGS += -L$(TO_TOP_DIR)/$(LIB_DIR)
 
 # -------
 # c files
