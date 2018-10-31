@@ -42,3 +42,7 @@ void led_off(void)
     RED_LED = 1;
 }
 
+void led_trigger(void)
+{
+    RED_LED = ! RED_LED;
+}

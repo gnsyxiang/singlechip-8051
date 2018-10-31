@@ -34,6 +34,7 @@ SC_LED_DRV_EX void led_init(void);
 
 SC_LED_DRV_EX void led_off(void);
 SC_LED_DRV_EX void led_on(void);
+SC_LED_DRV_EX void led_trigger(void);
 
 #ifdef __cplusplus
 }
