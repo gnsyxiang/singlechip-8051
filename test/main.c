@@ -19,33 +19,101 @@
  */
 #include <stdio.h>
 
-#include <time/time.h>
 #include <io/io.h>
+#include <int/int.h>
+#include <time/time.h>
 #include <led-drv/led-drv.h>
 
 #include <stc15wxxxx.h>
 
-#define DELAY_TIME_MS  (1 * 1000)
+#define CMD_RED_LED     P5_4
+
+#define DELAY_TIME_MS_HIGHT  (1 * 1000)
+#define DELAY_TIME_MS_LOW    (2 * 1000)
+
+void cmd_red(void)
+{
+    static unsigned long old_ticks;
+    unsigned long ticks;
+    static unsigned char state = 0;
+
+    ticks = time0_get_ticks();
+
+    switch (state) {
+        case 0:
+            old_ticks = ticks;
+            state = 1;
+            break;
+
+        case 1:
+            if (ticks - old_ticks > DELAY_TIME_MS_HIGHT) {
+                old_ticks = ticks;
+                state = 2;
+
+                CMD_RED_LED = 1;
+            }
+            break;
+        case 2:
+            if (ticks - old_ticks > DELAY_TIME_MS_LOW) {
+                old_ticks = ticks;
+                state = 1;
+
+                CMD_RED_LED = 0;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void con_red_led(void)
+{
+    static unsigned long old_ticks;
+    unsigned long ticks;
+    static unsigned char state;
+
+    ticks = time0_get_ticks();
+
+    switch (state) {
+        case 0:
+            old_ticks = ticks;
+            state = 1;
+            break;
+        case 1:
+            if (int0_get_flag() 
+                    && ticks - old_ticks > DELAY_TIME_MS_HIGHT) {
+                old_ticks = ticks;
+                int0_set_flag();
+                led_on();
+            }
+            state = 2;
+            break;
+        case 2:
+            if (int0_get_flag() 
+                    && ticks - old_ticks > DELAY_TIME_MS_HIGHT) {
+                old_ticks = ticks;
+                int0_set_flag();
+                led_off();
+            }
+            state = 1;
+            break;
+        default:
+            break;
+    }
+}
 
 void main(void)
 {
-    unsigned long ticks;
-    static unsigned long old_ticks;
-
     io_init();
     led_init();
     time0_init();
-
-    old_ticks = ticks = time0_get_ticks();
+    int_init(0, INT_FALLING_EDGE_TRIGGER);
 
     EA = 1;
     
     while (1) {
-        ticks = time0_get_ticks();
-        if (ticks - old_ticks > DELAY_TIME_MS) {
-            old_ticks = ticks;
-            led_trigger();
-        }
+        cmd_red();
+        con_red_led();
     }
 }
 

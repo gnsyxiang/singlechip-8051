@@ -18,21 +18,15 @@
 #     last modified: 29/10 2018 15:41
 # ===============================================================
 
-TO_TOP_DIR 	:= .
+TO_TOP_DIR 	:= ../..
 
 include $(TO_TOP_DIR)/configs/com-var-def.mk
 include $(TO_TOP_DIR)/configs/com-rul-def.mk
 
-subdir-src	:= tools \
-			   src/time \
-			   src/led \
-			   src/io \
-			   src/int
-
 # --------------
 # target setting
 # --------------
-TARGET 		?= singlechip-8051
+TARGET 		?= int
 TARGET_DEMO ?= main
 TARGET_LIB	?= $(TARGET).so
 
@@ -41,10 +35,10 @@ TARGET_PATH ?= $(LIB_DIR)/$(TARGET_LIB)
 # ------
 # flags
 # ------
-CFLAGS 	+= -I$(INC_DIR)
+CFLAGS 	+= -I$(INC_DIR) -I$(TO_TOP_DIR)/$(INC_DIR)
 
-LDFLAGS += -l$(TARGET_LIB) -ltime.so -lio.so -lled-drv.so -lint.so
-LDFLAGS += -L$(LIB_DIR)
+LDFLAGS += -l$(TARGET_LIB)
+LDFLAGS += -L$(TO_TOP_DIR)/$(LIB_DIR)
 
 # -------
 # c files
@@ -62,7 +56,8 @@ TST_IHX := $(patsubst %.rel, %.ihx, $(TST_REL))
 TST_OBJ ?= $(TST_REL)
 
 ###########################################
-all: init $(TARGET_PATH) $(TARGET_DEMO)
+all: init $(TARGET_LIB) $(TARGET_DEMO)
+	$(cp-lib-inc)
 ifneq ($(TOOLS_STCGAL).py, $(wildcard $(TOOLS_STCGAL).py))
 	$(RM) $(TOOLS_STCGAL).py
 	$(LN) $(TO_TOP_DIR)/tools/stcgal/$(TOOLS_STCGAL).py $(TOOLS_STCGAL).py
