@@ -82,5 +82,6 @@ stcgal.py
 
 !inc/sdcc/compiler.h
 !inc/sdcc/lint.h
+!inc/sdcc/compiler-compativility.h
 
 

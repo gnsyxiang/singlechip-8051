@@ -26,6 +26,7 @@ extern "C" {
 
 #include <sdcc/compiler.h>
 #include <sdcc/lint.h>
+#include <sdcc/compiler-compativility.h>
 
 /* io */
 #define _P0     (0x80)      // port 0
@@ -131,18 +132,24 @@ SBIT  (P5_0, _P5, 0);
 /* timer or counter */
 #define _TCON   (0x88)
 #define _TMOD   (0x89)
+#define _AUXR   (0X8E)
+#define _AUXR2  (0x8F)
+
 #define _TL0    (0x8A)
 #define _TH0    (0x8C)
 
 SFR   (TCON, _TCON);
 SFR   (TMOD, _TMOD);
+SFR   (AUXR, _AUXR);
+SFR   (AUXR2, _AUXR2);
+
 SFR   (TL0, _TL0);
 SFR   (TH0, _TH0);
 
 SBIT  (TF1, _TCON, 7);	    // T1溢出中断标志位
-SBIT  (TR1, _TCON, 6);	    // 定时器T1运行控制位
+SBIT  (TR1, _TCON, 6);	    // 定时器T1运行控制位, 配合GATE，可以外部控制T1
 SBIT  (TF0, _TCON, 5);	    // T0溢出中断标志位
-SBIT  (TR0, _TCON, 4);	    // 定时器T0运行控制位
+SBIT  (TR0, _TCON, 4);	    // 定时器T0运行控制位, 配合GATE，可以外部控制T0
 SBIT  (IE1, _TCON, 3);	    // 外部中断1请求源(INT1/P3.3)标志位 
 SBIT  (IT1, _TCON, 2);	    // 外部中断源1触发控制位
 SBIT  (IE0, _TCON, 1);	    // 外部中断0请求源(INT0/P3.2)标志
@@ -155,9 +162,11 @@ SFR16E(TMR0, 0x8C8A);       // Timer 0, lsb at 0x8A, msb at 0x8C
 /* interrupt */
 #define _IE     (0xA8)
 #define _IE2    (0xAF)
+#define _IP     (0xB8)
 
 SFR   (IE, _IE);            // interrupt enable 
 SFR   (IE2, _IE2);	        // interrupt enable 2
+SFR   (IP, _IP);	        // 中断优先级控制寄存器
 
 SBIT  (EA,   _IE, 7);	    // 总中断
 SBIT  (ELVD, _IE, 6);	    // 低压检测中断允许位
