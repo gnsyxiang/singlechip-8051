@@ -49,7 +49,7 @@ void time0_init(void)
 
 static volatile unsigned long __idata g_sys_ticks;
 
-void timer0_ISR(void) __interrupt 1 __using 1
+void timer0_ISR(void) __interrupt 1
 {
     TIME0_INIT_REG();
 
