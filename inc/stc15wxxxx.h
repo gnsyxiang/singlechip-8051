@@ -142,10 +142,13 @@ SBIT  (P5_0, _P5, 0);
 #define _T2H    (0xD6)
 #define _T2L    (0xD7)
 
+#define _INT_CLKO _AUXR2
+
 SFR   (TCON, _TCON);
 SFR   (TMOD, _TMOD);
 SFR   (AUXR, _AUXR);
 SFR   (AUXR2, _AUXR2);
+SFR   (INT_CLKO, _INT_CLKO);
 
 SFR   (TL0, _TL0);
 SFR   (TH0, _TH0);
@@ -182,6 +185,15 @@ SBIT  (ET1,  _IE, 3);	    // 定时器/计数器T1的溢出中断允许位
 SBIT  (EX1,  _IE, 2);	    // 外部中断1中断允许位
 SBIT  (ET0,  _IE, 1);	    // 定时器/计数器T0的溢出中断允许位
 SBIT  (EX0,  _IE, 0);	    // 外部中断1中断允许位
+
+SBIT  (PPCA, _IP, 7);	    //
+SBIT  (PLVD, _IP, 6);	    //
+SBIT  (PADC, _IP, 5);	    //
+SBIT  (PS,   _IP, 4);	    //
+SBIT  (PT1,  _IP, 3);	    // 定时器1中断优先级控制位
+SBIT  (PX1,  _IP, 2);	    //
+SBIT  (PT0,  _IP, 1);	    // 定时器0中断优先级控制位
+SBIT  (PX0,  _IP, 0);	    //
 
 /* serial */
 #define _AUXR1  (0xA2)      // 外围设备切换控制寄存器 

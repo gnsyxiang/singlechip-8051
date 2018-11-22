@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 #include <stc15wxxxx.h>
+#include <common.h>
 
 #define SC_TIME_GB
 #include "time.h"
@@ -36,6 +37,88 @@
 
 static unsigned int 
 __code g_timer0_init_val = 65536 - (CFG_SYS_CLK / 12 / CFG_TIME0_CLK);
+
+struct time_init {
+    int8_t  tim_mode;           // 工作模式
+    int8_t  tim_polity;         // 优先级
+    int8_t  tim_interrupt;      // 中断允许
+    int8_t  tim_clk_source;     // 时钟源
+    int8_t  tim_clk_out;        // 可编程时钟输出
+    int16_t tim_value;          // 装载初值
+    int8_t  tim_is_run;         // 是否运行
+} tim_init_t;
+
+static int8_t timer0_init(timer_init_t *timer_x)
+{
+    TR0 = 0;		//停止计数
+
+    // 设置工作模式
+    if (timer_x->tim_mode >= TIM_MODE_MAX)
+        return -2;
+    TMOD = (TMOD & ~(0x03 << 0)) | timer_x->tim_mode;
+
+    // 设置优先级
+    if (timer_x->tim_polity == INT_POLITY_HIGHT)
+        PT0 = 1;
+    else
+        PT0 = 0;
+
+    // 是否允许中断
+    if (timer_x->tim_interrupt == ENABLE)
+        ET0 = 1;
+    else
+        ET0 = 0;
+
+    // 设置频率
+    if (timer_x->tim_clk_source == TIM_CLK_12T)
+        AUXR &= ~(0x1 << 7);	//12T
+    if (timer_x->tim_clk_source == TIM_CLK_1T)
+        AUXR |=  (0x1 << 7);	//1T
+    if (timer_x->tim_clk_source == TIM_CLK_EXT)
+        TMOD |=  (0x1 << 2);	//对外计数或分频
+    else
+        TMOD &= ~(0x1 << 2);	//定时
+
+    // 输出时钟
+    if (timer_x->tim_clk_out == ENABLE)
+        INT_CLKO |=  (0x1 << 0);
+    else
+        INT_CLKO &= ~(0x1 << 0);
+
+    // 设置初始值
+    TH0 = (uint8_t)(timer_x->tim_value >> 8);
+    TL0 = (uint8_t)timer_x->tim_value;
+
+    // 是否运行
+    if (timer_x->tim_is_run == ENABLE)
+        TR0 = 1;	//开始运行
+
+    return 0;
+}
+
+int8_t timer_init(TIM_NUM_t timer_num, timer_init_t *timer_x)
+{
+    if (timer_num > TIM_NUM_MAX || !timer_x) {
+        return -1;
+    }
+
+    switch (timer_num) {
+        case TIM_NUM_0:
+            return timer0_init(timer_x);
+        case TIM_NUM_1:
+            break;
+        case TIM_NUM_2:
+            break;
+        case TIM_NUM_3:
+            break;
+        case TIM_NUM_4:
+            break;
+        default:
+            break;
+    }
+
+    return 0;
+}
 
 void time0_init(void)
 {

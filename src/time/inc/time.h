@@ -30,6 +30,47 @@ extern "C" {
 #define SC_TIME_EX
 #endif
 
+#include <stdint.h>
+
+typedef enum {
+    TIM_NUM_0 = 0,
+    TIM_NUM_1,
+    TIM_NUM_2,
+    TIM_NUM_3,
+    TIM_NUM_4,
+
+    TIM_NUM_MAX
+} TIM_NUM_t;
+
+typedef enum {
+    TIM_MODE_16BitAutoReload = 0,
+    TIM_MODE_16Bit,
+    TIM_MODE_8BitAutoReload,
+    TIM_MODE_16BitAutoReloadNoMask,
+
+    TIM_MODE_MAX
+} TIM_MODE_t;
+
+typedef enum {
+    TIM_POLITY_HIGHT = 0,
+    TIM_POLITY_LOW,
+
+    TIM_POLITY_MAX
+} TIM_POLITY_t;
+
+typedef enum {
+    TIM_CLK_1T = 0,
+    TIM_CLK_12T,
+    TIM_CLK_EXT,
+
+    TIM_CLK_MAX
+} TIM_CLK_t;
+
+struct time_init;
+typedef struct time_init timer_init_t;
+
+SC_TIME_EX int8_t timer_init(TIM_NUM_t timer_num, timer_init_t *timer_init);
+
 SC_TIME_EX void time0_init(void);
 SC_TIME_EX unsigned long time0_get_ticks(void);
 SC_TIME_EX void timer0_ISR(void) __interrupt 1;
