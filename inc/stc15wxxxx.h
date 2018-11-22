@@ -137,6 +137,10 @@ SBIT  (P5_0, _P5, 0);
 
 #define _TL0    (0x8A)
 #define _TH0    (0x8C)
+#define _TH1    (0x8D)
+#define _TL1    (0x8B)
+#define _T2H    (0xD6)
+#define _T2L    (0xD7)
 
 SFR   (TCON, _TCON);
 SFR   (TMOD, _TMOD);
@@ -145,6 +149,8 @@ SFR   (AUXR2, _AUXR2);
 
 SFR   (TL0, _TL0);
 SFR   (TH0, _TH0);
+SFR   (TH1, _TH1);
+SFR   (TL1, _TL1);
 
 SBIT  (TF1, _TCON, 7);	    // T1溢出中断标志位
 SBIT  (TR1, _TCON, 6);	    // 定时器T1运行控制位, 配合GATE，可以外部控制T1
@@ -176,7 +182,41 @@ SBIT  (ET1,  _IE, 3);	    // 定时器/计数器T1的溢出中断允许位
 SBIT  (EX1,  _IE, 2);	    // 外部中断1中断允许位
 SBIT  (ET0,  _IE, 1);	    // 定时器/计数器T0的溢出中断允许位
 SBIT  (EX0,  _IE, 0);	    // 外部中断1中断允许位
- 
+
+/* serial */
+#define _AUXR1  (0xA2)      // 外围设备切换控制寄存器 
+#define _SCON   (0x98)      // 串行控制寄存器
+#define _SBUF   (0x99)      // 串行口数据缓冲器 
+#define _S2BUF  (0x9B)
+#define _S3BUF  (0xAD)
+#define _S4BUF  (0x85)
+#define _PCON   (0x87)      // 电源控制寄存器
+#define _PCON2  (0x97)
+#define _IE     (0xA8)
+#define _IP     (0xB8)
+#define _SADEN  (0xB9)
+#define _SADDR  (0xA9)
+
+SFR   (SCON, _SCON);
+SFR   (PCON, _PCON);
+SFR   (SBUF, _SBUF);
+SFR   (S2BUF, _S2BUF);
+SFR   (S3BUF, _S3BUF);
+SFR   (S4BUF, _S4BUF);
+
+SBIT  (SM0, _SCON, 7);	    //
+SBIT  (SM1, _SCON, 6);	    //
+SBIT  (SM2, _SCON, 5);	    //
+SBIT  (REN, _SCON, 4);	    //
+SBIT  (TB8, _SCON, 3);	    //
+SBIT  (RB8, _SCON, 2);	    //
+SBIT  (TI,  _SCON, 1);	    //
+SBIT  (RI,  _SCON, 0);	    //
+
+/* CCP/PWM/PCA */
+#define _AUXR1  (0xA2)      // 外围设备切换控制寄存器 
+
+SFR   (AUXR1, _AUXR1);
 
 SFRX  (CPUCS, 0xE600);      // Cypress FX2 Control and Status register in xdata memory at 0xE600
 

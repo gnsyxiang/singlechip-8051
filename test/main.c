@@ -21,6 +21,7 @@
 
 #include <io/io.h>
 #include <int/int.h>
+#include <uart/uart.h>
 #include <time/time.h>
 #include <led-drv/led-drv.h>
 
@@ -83,19 +84,23 @@ void con_red_led(void)
             if (int0_get_flag() 
                     && ticks - old_ticks > DELAY_TIME_MS_HIGHT) {
                 old_ticks = ticks;
+                state = 2;
+
                 int0_set_flag();
                 led_on();
+                printf("-1-hahahaha\r\n");
             }
-            state = 2;
             break;
         case 2:
             if (int0_get_flag() 
                     && ticks - old_ticks > DELAY_TIME_MS_HIGHT) {
                 old_ticks = ticks;
+                state = 1;
+
                 int0_set_flag();
                 led_off();
+                printf("-2-hahahaha\r\n");
             }
-            state = 1;
             break;
         default:
             break;
@@ -105,13 +110,16 @@ void con_red_led(void)
 void main(void)
 {
     io_init();
+
     led_init();
     time0_init();
     int_init(0, INT_FALLING_EDGE_TRIGGER);
+    uart1_init();
 
     EA = 1;
     
     while (1) {
+
         cmd_red();
         con_red_led();
     }
