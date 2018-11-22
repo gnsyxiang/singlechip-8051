@@ -24,6 +24,8 @@
 extern "C" {
 #endif
 
+#include <hwconfig.h>
+
 typedef enum {
     INT_POLITY_HIGHT = 0,
     INT_POLITY_LOW,
@@ -35,6 +37,8 @@ enum {
     ENABLE = 0,
     DISABLE,
 };
+
+#define BIT16_VAL   (65536)
 
 #ifdef __cplusplus
 }

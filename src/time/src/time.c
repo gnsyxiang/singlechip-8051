@@ -26,7 +26,6 @@
 #include "time.h"
 #undef SC_TIME_GB
 
-#define CFG_SYS_CLK 	(22118400UL)
 #define CFG_TIME0_CLK   (1 * 1000U)
 
 #define TIME0_INIT_REG()                \
@@ -38,86 +37,293 @@
 static unsigned int 
 __code g_timer0_init_val = 65536 - (CFG_SYS_CLK / 12 / CFG_TIME0_CLK);
 
-struct time_init {
-    int8_t  tim_mode;           // 工作模式
-    int8_t  tim_polity;         // 优先级
-    int8_t  tim_interrupt;      // 中断允许
-    int8_t  tim_clk_source;     // 时钟源
-    int8_t  tim_clk_out;        // 可编程时钟输出
-    int16_t tim_value;          // 装载初值
-    int8_t  tim_is_run;         // 是否运行
-} tim_init_t;
+#define timer_val_get(tim_value_ms) (CFG_SYS_CLK * tim_value_ms) / 1000
+#define timer_val_get_hex(THx, TLx, timer_val)  \
+    do {                                        \
+        TLx = timer_val & 0xff;                 \
+        THx = timer_val >> 8;                   \
+    } while(0)
 
-static int8_t timer0_init(timer_init_t *timer_x)
+static inline void timer_set_value(timer_init_t *timer_x)
 {
-    TR0 = 0;		//停止计数
+    unsigned long timer_val;
 
-    // 设置工作模式
-    if (timer_x->tim_mode >= TIM_MODE_MAX)
-        return -2;
-    TMOD = (TMOD & ~(0x03 << 0)) | timer_x->tim_mode;
-
-    // 设置优先级
-    if (timer_x->tim_polity == INT_POLITY_HIGHT)
-        PT0 = 1;
-    else
-        PT0 = 0;
-
-    // 是否允许中断
-    if (timer_x->tim_interrupt == ENABLE)
-        ET0 = 1;
-    else
-        ET0 = 0;
-
-    // 设置频率
-    if (timer_x->tim_clk_source == TIM_CLK_12T)
-        AUXR &= ~(0x1 << 7);	//12T
-    if (timer_x->tim_clk_source == TIM_CLK_1T)
-        AUXR |=  (0x1 << 7);	//1T
-    if (timer_x->tim_clk_source == TIM_CLK_EXT)
-        TMOD |=  (0x1 << 2);	//对外计数或分频
-    else
-        TMOD &= ~(0x1 << 2);	//定时
-
-    // 输出时钟
-    if (timer_x->tim_clk_out == ENABLE)
-        INT_CLKO |=  (0x1 << 0);
-    else
-        INT_CLKO &= ~(0x1 << 0);
-
-    // 设置初始值
-    TH0 = (uint8_t)(timer_x->tim_value >> 8);
-    TL0 = (uint8_t)timer_x->tim_value;
-
-    // 是否运行
-    if (timer_x->tim_is_run == ENABLE)
-        TR0 = 1;	//开始运行
-
-    return 0;
-}
-
-int8_t timer_init(TIM_NUM_t timer_num, timer_init_t *timer_x)
-{
-    if (timer_num > TIM_NUM_MAX || !timer_x) {
-        return -1;
+    if (timer_x->tim_clk_source == TIM_CLK_12T) {
+        timer_val = BIT16_VAL - timer_val_get(timer_x->tim_value_ms) / 12;
+    } else {
+        timer_val = BIT16_VAL - timer_val_get(timer_x->tim_value_ms);
     }
 
-    switch (timer_num) {
+    switch (timer_x->tim_num) {
         case TIM_NUM_0:
-            return timer0_init(timer_x);
+            timer_val_get_hex(TH0, TL0, timer_val);
+            break;
         case TIM_NUM_1:
+            timer_val_get_hex(TH1, TL1, timer_val);
             break;
         case TIM_NUM_2:
+            timer_val_get_hex(TH2, TL2, timer_val);
             break;
         case TIM_NUM_3:
+            timer_val_get_hex(TH3, TL3, timer_val);
             break;
         case TIM_NUM_4:
+            timer_val_get_hex(TH4, TL4, timer_val);
             break;
+        default:
+            break;
+    }
+}
+
+#define int_enable(tim_interrupt, ETx)  \
+    do {                                \
+        if (tim_interrupt == ENABLE)    \
+            ETx = 1;                    \
+        else                            \
+            ETx = 0;                    \
+    } while(0)
+
+#define int_enable_1(tim_interrupt, reg, bit)   \
+    do {                                        \
+        if (tim_interrupt == ENABLE)            \
+            reg |=  (0x1 << bit);               \
+        else                                    \
+            reg &= ~(0x1 << bit);               \
+    } while(0)
+
+
+static inline void timer_enable_int(timer_init_t *timer_x)
+{
+    switch (timer_x->tim_num) {
+        case TIM_NUM_0:
+            int_enable(timer_x->tim_interrupt, ET0);
+            break;
+        case TIM_NUM_1:
+            int_enable(timer_x->tim_interrupt, ET1);
+            break;
+        case TIM_NUM_2:
+            int_enable_1(timer_x->tim_interrupt, IE2, 2);
+            break;
+        case TIM_NUM_3:
+            int_enable_1(timer_x->tim_interrupt, IE2, 5);
+            break;
+        case TIM_NUM_4:
+            int_enable_1(timer_x->tim_interrupt, IE2, 6);
+            break;
+        default:
+            break;
+    }
+}
+
+#define out_clk(tim_clk_out, reg, bit)  \
+    do {                                \
+        if (tim_clk_out == ENABLE)      \
+            reg |=  (0x1 << bit);       \
+        else                            \
+            reg &= ~(0x1 << bit);       \
+    } while(0)
+
+static inline void timer_out_clk(timer_init_t *timer_x)
+{
+    switch (timer_x->tim_num) {
+        case TIM_NUM_0:
+            out_clk(timer_x->tim_clk_out, INT_CLKO, 0);
+            break;
+        case TIM_NUM_1:
+            out_clk(timer_x->tim_clk_out, INT_CLKO, 1);
+            break;
+        case TIM_NUM_2:
+            out_clk(timer_x->tim_clk_out, INT_CLKO, 2);
+            break;
+        case TIM_NUM_3:
+            out_clk(timer_x->tim_clk_out, T4T3M, 0);
+            break;
+        case TIM_NUM_4:
+            out_clk(timer_x->tim_clk_out, T4T3M, 4);
+            break;
+        default:
+            break;
+    }
+}
+
+#define polity_set(tim_polity, PTx)              \
+    do {                                         \
+        if (tim_polity == INT_POLITY_HIGHT)      \
+            PTx = 1;                             \
+        else                                     \
+            PTx = 0;                             \
+    } while(0)
+
+static inline void timer_set_polity(timer_init_t *timer_x)
+{
+    switch (timer_x->tim_num) {
+        case TIM_NUM_0:
+            polity_set(timer_x->tim_polity, PT0);
+            break;
+        case TIM_NUM_1:
+            polity_set(timer_x->tim_polity, PT1);
+            break;
+        // T2、T3、T4固定为低优先级
+        default:
+            break;
+    }
+}
+
+#define mode_set(tim_mode, bit) TMOD = (TMOD & ~(0x03 << bit)) | tim_mode
+
+static inline int8_t timer_set_mode(timer_init_t *timer_x)
+{
+    if (timer_x->tim_mode >= TIM_MODE_MAX)
+        return -1;
+
+    switch (timer_x->tim_num) {
+        case TIM_NUM_0:
+            mode_set(timer_x->tim_mode, 0);
+            break;
+        case TIM_NUM_1:
+            if (timer_x->tim_mode >= TIM_MODE_16BitAutoReloadNoMask)
+                return -2;
+            mode_set(timer_x->tim_mode, 4);
+            break;
+        // T2、T3、T4固定为16位自动重装载模式
         default:
             break;
     }
 
     return 0;
+}
+
+#define clk_set(tim_clk_source, reg, bit)   \
+    do {                                    \
+        if (tim_clk_source == TIM_CLK_12T)  \
+            reg &= ~(0x1 << bit);           \
+        else                                \
+            reg |=  (0x1 << bit);           \
+    } while(0)
+
+static inline void timer_set_clk(timer_init_t *timer_x)
+{
+    switch (timer_x->tim_num) {
+        case TIM_NUM_0:
+            clk_set(timer_x->tim_clk_source, AUXR, 7);
+            break;
+        case TIM_NUM_1:
+            clk_set(timer_x->tim_clk_source, AUXR, 6);
+            break;
+        case TIM_NUM_2:
+            clk_set(timer_x->tim_clk_source, AUXR, 2);
+            break;
+        case TIM_NUM_3:
+            clk_set(timer_x->tim_clk_source, T4T3M, 1);
+            break;
+        case TIM_NUM_4:
+            clk_set(timer_x->tim_clk_source, T4T3M, 5);
+            break;
+        default:
+            break;
+    }
+}
+
+#define cnt_timer_set(tim_cnt_timer, reg, bit) \
+    do {                                    \
+        if (tim_cnt_timer == TIM_CNT)       \
+            reg |=  (0x1 << bit);           \
+        else                                \
+            reg &= ~(0x1 << bit);           \
+    } while(0)
+
+static inline void timer_set_cnt_timer(timer_init_t *timer_x)
+{
+    switch (timer_x->tim_num) {
+        case TIM_NUM_0:
+            cnt_timer_set(timer_x->tim_clk_source, TMOD, 2);
+            break;
+        case TIM_NUM_1:
+            cnt_timer_set(timer_x->tim_clk_source, TMOD, 6);
+            break;
+        case TIM_NUM_2:
+            cnt_timer_set(timer_x->tim_clk_source, AUXR, 3);
+            break;
+        case TIM_NUM_3:
+            cnt_timer_set(timer_x->tim_clk_source, T4T3M, 2);
+            break;
+        case TIM_NUM_4:
+            cnt_timer_set(timer_x->tim_clk_source, T4T3M, 6);
+            break;
+        default:
+            break;
+    }
+}
+
+static inline void timer_stop_running(timer_init_t *timer_x)
+{
+    switch (timer_x->tim_num) {
+        case TIM_NUM_0:
+            TR0 = 0;
+            break;
+        case TIM_NUM_1:
+            TR1 = 0;
+            break;
+        case TIM_NUM_2:
+            AUXR &= ~(0x1 << 4);
+            break;
+        case TIM_NUM_3:
+            T4T3M &= ~(0x1 << 3);
+            break;
+        case TIM_NUM_4:
+            T4T3M &= ~(0x1 << 7);
+            break;
+        default:
+            break;
+    }
+}
+
+static inline void timer_set_running(timer_init_t *timer_x)
+{
+    switch (timer_x->tim_num) {
+        case TIM_NUM_0:
+            if (timer_x->tim_is_run == ENABLE)
+                TR0 = 1;
+            break;
+        case TIM_NUM_1:
+            if (timer_x->tim_is_run == ENABLE)
+                TR1 = 1;
+            break;
+        case TIM_NUM_2:
+            AUXR |= (0x1 << 4);
+            break;
+        case TIM_NUM_3:
+            T4T3M |= (0x1 << 3);
+            break;
+        case TIM_NUM_4:
+            T4T3M |= (0x1 << 7);
+            break;
+        default:
+            break;
+    }
+}
+
+int8_t timer_init(timer_init_t *timer_x)
+{
+    int8_t ret;
+
+    if (timer_x->tim_num >= TIM_NUM_MAX || !timer_x) {
+        return -1;
+    }
+
+    timer_stop_running(timer_x);
+
+    ret = timer_set_mode(timer_x);
+    timer_set_polity(timer_x);
+    timer_enable_int(timer_x);
+    timer_set_clk(timer_x);
+    timer_set_cnt_timer(timer_x);
+    timer_out_clk(timer_x);
+    timer_set_value(timer_x);
+
+    timer_set_running(timer_x);
+
+    return ret;
 }
 
 void time0_init(void)
@@ -132,12 +338,12 @@ void time0_init(void)
 
 static volatile unsigned long __idata g_sys_ticks;
 
-void timer0_ISR(void) __interrupt 1
-{
-    TIME0_INIT_REG();
-
-	g_sys_ticks++;
-}
+// void timer0_ISR(void) __interrupt 1 __using 1
+// {
+    // TIME0_INIT_REG();
+//
+    // g_sys_ticks++;
+// }
 
 unsigned long time0_get_ticks(void)
 {

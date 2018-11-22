@@ -134,13 +134,19 @@ SBIT  (P5_0, _P5, 0);
 #define _TMOD   (0x89)
 #define _AUXR   (0X8E)
 #define _AUXR2  (0x8F)
+#define _T4T3M  (0xD1)
 
 #define _TL0    (0x8A)
 #define _TH0    (0x8C)
 #define _TH1    (0x8D)
 #define _TL1    (0x8B)
-#define _T2H    (0xD6)
-#define _T2L    (0xD7)
+
+#define _TH4    (0xD2)
+#define _TL4    (0xD3)
+#define _TH3    (0xD4)
+#define _TL3    (0xD5)
+#define _TH2    (0xD6)
+#define _TL2    (0xD7)
 
 #define _INT_CLKO _AUXR2
 
@@ -149,11 +155,18 @@ SFR   (TMOD, _TMOD);
 SFR   (AUXR, _AUXR);
 SFR   (AUXR2, _AUXR2);
 SFR   (INT_CLKO, _INT_CLKO);
+SFR   (T4T3M, _T4T3M);
 
 SFR   (TL0, _TL0);
 SFR   (TH0, _TH0);
 SFR   (TH1, _TH1);
 SFR   (TL1, _TL1);
+SFR   (TH2, _TH2);
+SFR   (TL2, _TL2);
+SFR   (TH3, _TH3);
+SFR   (TL3, _TL3);
+SFR   (TH4, _TH4);
+SFR   (TL4, _TL4);
 
 SBIT  (TF1, _TCON, 7);	    // T1溢出中断标志位
 SBIT  (TR1, _TCON, 6);	    // 定时器T1运行控制位, 配合GATE，可以外部控制T1

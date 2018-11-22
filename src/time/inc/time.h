@@ -61,15 +61,31 @@ typedef enum {
 typedef enum {
     TIM_CLK_1T = 0,
     TIM_CLK_12T,
-    TIM_CLK_EXT,
 
     TIM_CLK_MAX
 } TIM_CLK_t;
 
-struct time_init;
-typedef struct time_init timer_init_t;
+typedef enum {
+    TIM_CNT = 0,
+    TIM_TIMER,
 
-SC_TIME_EX int8_t timer_init(TIM_NUM_t timer_num, timer_init_t *timer_init);
+    TIM_MAX
+} TIM_CNT_TIMER_t;
+
+typedef struct timer_init {
+    TIM_NUM_t tim_num;          // 定时器x
+
+    int8_t tim_mode;            // 工作模式
+    int8_t tim_polity;          // 优先级
+    int8_t tim_interrupt;       // 中断允许
+    int8_t tim_clk_source;      // 时钟源
+    int8_t tim_cnt_timer;       // 定时器/计数器选择
+    int8_t tim_clk_out;         // 可编程时钟输出
+    int8_t tim_value_ms;        // 装载初值
+    int8_t tim_is_run;          // 是否运行
+} timer_init_t;
+
+SC_TIME_EX int8_t timer_init(timer_init_t *timer_init);
 
 SC_TIME_EX void time0_init(void);
 SC_TIME_EX unsigned long time0_get_ticks(void);
