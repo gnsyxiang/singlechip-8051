@@ -72,6 +72,13 @@ typedef enum {
     TIM_MAX
 } TIM_CNT_TIMER_t;
 
+typedef enum {
+    TIM_RUNNING_START = 0,
+    TIM_RUNNING_STOP,
+
+    TIM_RUNNING_MAX
+} TIM_RUNNING_t;
+
 typedef struct timer_init {
     TIM_NUM_t tim_num;          // 定时器x
 

@@ -53,7 +53,7 @@ void main(void)
 {
     timer_init_t timer_0;
 
-    timer_0.tim_num         = TIM_NUM_1;
+    timer_0.tim_num         = TIM_NUM_0;
     timer_0.tim_mode        = TIM_MODE_16BitAutoReload;
     timer_0.tim_polity      = TIM_POLITY_HIGHT;
     timer_0.tim_interrupt   = ENABLE;
