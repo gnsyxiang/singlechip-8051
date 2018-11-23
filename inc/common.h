@@ -40,6 +40,25 @@ enum {
 
 #define BIT16_VAL   (65536)
 
+#define reg_set(var, lable, reg, bit)   \
+    do {                                \
+        if (var == lable)               \
+            reg |=  (0x1 << bit);       \
+        else                            \
+            reg &= ~(0x1 << bit);       \
+    } while(0)
+
+#define reg_set1(var, lable, BIT)       \
+    do {                                \
+        if (var == lable)               \
+            BIT = 1;                    \
+        else                            \
+            BIT = 0;                    \
+    } while(0)
+
+#define bit_set(reg, bit)    reg |=  (0x1 << bit)
+#define bit_reset(reg, bit)  reg &= ~(0x1 << bit)
+
 #ifdef __cplusplus
 }
 #endif

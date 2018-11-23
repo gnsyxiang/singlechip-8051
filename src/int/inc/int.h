@@ -31,18 +31,31 @@ extern "C" {
 #endif
 
 typedef enum {
-    INT_RISING_AND_FALLING_EDGE_TRIGGER,
-    INT_FALLING_EDGE_TRIGGER,
+    INT_MODE_RISING_AND_FALLING = 0,
+    INT_MODE_FALLING,
 
-    INT_EDGE_MAX
-}int_trigger_mode_t;
+    INT_MODE_MAX
+}int_mode_t;
 
 typedef enum {
     INT_NUM_0 = 0,
+    INT_NUM_1,
+    INT_NUM_2,
+    INT_NUM_3,
+    INT_NUM_4,
 
     INT_NUM_MAX
 }int_num_t;
 
+typedef struct {
+    int8_t int_mode;            // 中断模式
+    int8_t int_polity;          // 中断优先级
+    int8_t int_is_interrupt;    // 是否允许中断
+} int_init_t;
+
+SC_INT_EX int8_t int_init(int_num_t int_num, int_init_t *int_init_x);
+
+#if 0
 #define _INT_IT(num, trigger_mode)   IT##num = trigger_mode
 #define _INT_EX(num)                 EX##num = 1 
 
@@ -58,6 +71,7 @@ typedef enum {
 SC_INT_EX char int0_get_flag(void);
 SC_INT_EX void int0_set_flag(void);
 SC_INT_EX void int0_isr(void) __interrupt 0;
+#endif
 
 #ifdef __cplusplus
 }

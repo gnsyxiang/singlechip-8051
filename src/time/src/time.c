@@ -33,25 +33,6 @@
         THx = timer_val >> 8;                   \
     } while(0)
 
-#define reg_set(tim_interrupt, lable, reg, bit) \
-    do {                                        \
-        if (tim_interrupt == lable)             \
-            reg |=  (0x1 << bit);               \
-        else                                    \
-            reg &= ~(0x1 << bit);               \
-    } while(0)
-
-#define reg_set1(tim_interrupt, lable, ETx)     \
-    do {                                        \
-        if (tim_interrupt == lable)             \
-            ETx = 1;                            \
-        else                                    \
-            ETx = 0;                            \
-    } while(0)
-
-#define TRx_set_start(reg, bit) reg |=  (0x1 << bit)
-#define TRx_set_stop(reg, bit)  reg &= ~(0x1 << bit)
-
 #define mode_set(tim_mode, bit) TMOD = (TMOD & ~(0x03 << bit)) | tim_mode
 
 static inline int8_t timer_init_0(timer_init_t *timer_x, uint32_t timer_val)
@@ -93,7 +74,7 @@ static inline int8_t timer_init_1(timer_init_t *timer_x, uint32_t timer_val)
 
 static inline int8_t timer_init_2(timer_init_t *timer_x, uint32_t timer_val)
 {
-    TRx_set_stop(AUXR, 4);
+    bit_reset(AUXR, 4);
     reg_set(timer_x->tim_interrupt, ENABLE, IE2, 2);
     reg_set(timer_x->tim_clk_source, TIM_CLK_1T, AUXR, 2);
     reg_set(timer_x->tim_clk_source, TIM_CNT, AUXR, 3);
@@ -101,14 +82,14 @@ static inline int8_t timer_init_2(timer_init_t *timer_x, uint32_t timer_val)
     timer_val_get_hex(TH2, TL2, timer_val);
 
     if (timer_x->tim_is_run == ENABLE)
-        TRx_set_start(AUXR, 4);
+        bit_set(AUXR, 4);
 
     return 0;
 }
 
 static inline int8_t timer_init_3(timer_init_t *timer_x, uint32_t timer_val)
 {
-    TRx_set_stop(T4T3M, 3);
+    bit_reset(T4T3M, 3);
     reg_set(timer_x->tim_interrupt, ENABLE, IE2, 5);
     reg_set(timer_x->tim_clk_source, TIM_CLK_1T, T4T3M, 1);
     reg_set(timer_x->tim_clk_source, TIM_CNT, T4T3M, 2);
@@ -116,14 +97,14 @@ static inline int8_t timer_init_3(timer_init_t *timer_x, uint32_t timer_val)
     timer_val_get_hex(TH3, TL3, timer_val);
 
     if (timer_x->tim_is_run == ENABLE)
-        TRx_set_start(T4T3M, 3);
+        bit_set(T4T3M, 3);
 
     return 0;
 }
 
 static inline int8_t timer_init_4(timer_init_t *timer_x, uint32_t timer_val)
 {
-    TRx_set_stop(T4T3M, 7);
+    bit_reset(T4T3M, 7);
     reg_set(timer_x->tim_interrupt, ENABLE, IE2, 6);
     reg_set(timer_x->tim_clk_source, TIM_CLK_1T, T4T3M, 5);
     reg_set(timer_x->tim_clk_source, TIM_CNT, T4T3M, 6);
@@ -131,7 +112,7 @@ static inline int8_t timer_init_4(timer_init_t *timer_x, uint32_t timer_val)
     timer_val_get_hex(TH4, TL4, timer_val);
 
     if (timer_x->tim_is_run == ENABLE)
-        TRx_set_start(T4T3M, 7);
+        bit_set(T4T3M, 7);
 
     return 0;
 }

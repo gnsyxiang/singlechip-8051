@@ -23,28 +23,25 @@
 #include <common.h>
 #include <time/time.h>
 
-static int cnt = 0;
+static int8_t cnt = 0;
+static int8_t cnt_flag = 0;
+static int8_t test = 0;
 
 void timer0_ISR(void) __interrupt 1
 {
-    if (cnt++ >= 100) {
+    if (cnt++ >= 10) {
         cnt = 0;
-        RED_LED = !RED_LED;
+
+        cnt_flag = 1;
     }
 }
 
 void timer1_ISR(void) __interrupt 3
 {
-    if (cnt++ >= 100) {
-        cnt = 0;
-        RED_LED = !RED_LED;
-    }
-}
+    if (cnt_flag && test++ >= 100) {
+        cnt_flag = 0;
+        test = 0;
 
-void timer2_ISR(void) __interrupt 12
-{
-    if (cnt++ >= 100) {
-        cnt = 0;
         RED_LED = !RED_LED;
     }
 }
@@ -62,6 +59,10 @@ void main(void)
     timer_0.tim_clk_out     = DISABLE;
     timer_0.tim_value_ms    = 10;
     timer_0.tim_is_run      = ENABLE;
+
+    timer_init(&timer_0);
+
+    timer_0.tim_num         = TIM_NUM_1;
 
     timer_init(&timer_0);
 
