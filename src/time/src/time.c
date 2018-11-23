@@ -26,17 +26,6 @@
 #include "time.h"
 #undef SC_TIME_GB
 
-#define CFG_TIME0_CLK   (1 * 1000U)
-
-#define TIME0_INIT_REG()                \
-    do {                                \
-        TL0 = g_timer0_init_val & 0xff; \
-        TH0 = g_timer0_init_val >> 8;   \
-    } while(0)
-
-static unsigned int 
-__code g_timer0_init_val = 65536 - (CFG_SYS_CLK / 12 / CFG_TIME0_CLK);
-
 #define timer_val_get(tim_value_ms) (CFG_SYS_CLK * tim_value_ms) / 1000
 #define timer_val_get_hex(THx, TLx, timer_val)  \
     do {                                        \
@@ -90,7 +79,6 @@ static inline void timer_set_value(timer_init_t *timer_x)
         else                                    \
             reg &= ~(0x1 << bit);               \
     } while(0)
-
 
 static inline void timer_enable_int(timer_init_t *timer_x)
 {
@@ -324,35 +312,6 @@ int8_t timer_init(timer_init_t *timer_x)
     timer_set_running(timer_x);
 
     return ret;
-}
-
-void time0_init(void)
-{
-    TMOD = (TMOD & 0xf0u) | 0x01u;
-
-    TIME0_INIT_REG();
-
-	ET0 = 1;
-	TR0 = 1;
-}
-
-static volatile unsigned long __idata g_sys_ticks;
-
-// void timer0_ISR(void) __interrupt 1 __using 1
-// {
-    // TIME0_INIT_REG();
-//
-    // g_sys_ticks++;
-// }
-
-unsigned long time0_get_ticks(void)
-{
-	unsigned long ticks;
-
-	EA = 0;
-	ticks = g_sys_ticks;
-	EA = 1;
-	return ticks;
 }
 
 void delay02s(void)
