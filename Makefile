@@ -26,7 +26,7 @@ include $(TO_TOP_DIR)/configs/com-rul-def.mk
 subdir-src	:= tools \
 			   src/time \
 			   src/led \
-			   src/io \
+			   src/gpio \
 			   src/int \
 			   src/uart
 
@@ -45,7 +45,7 @@ TARGET_PATH ?= $(LIB_DIR)/$(TARGET_LIB)
 CFLAGS 	+= -I$(INC_DIR)
 
 LDFLAGS += -l$(TARGET_LIB) \
-		   -ltime.so -lio.so -lled-drv.so -lint.so \
+		   -ltime.so -lgpio.so -lled-drv.so -lint.so \
 		   -luart.so
 LDFLAGS += -L$(LIB_DIR)
 

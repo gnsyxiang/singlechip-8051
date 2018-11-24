@@ -19,7 +19,7 @@
  */
 #include <stdio.h>
 
-#include <io/io.h>
+#include <gpio/gpio.h>
 #include <int/int.h>
 #include <uart/uart.h>
 #include <time/time.h>
@@ -35,6 +35,7 @@ void main(void)
     unsigned long cnt = 0;
     static unsigned long cnt_old = 0;
 
+    gpio_init_default();
     sys_tick_init();
 
     EA = 1;

@@ -26,7 +26,7 @@ include $(TO_TOP_DIR)/configs/com-rul-def.mk
 # --------------
 # target setting
 # --------------
-TARGET 		?= io
+TARGET 		?= gpio
 TARGET_DEMO ?= main
 TARGET_LIB	?= $(TARGET).so
 
