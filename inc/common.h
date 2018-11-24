@@ -38,7 +38,7 @@ enum {
     DISABLE,
 };
 
-#define BIT16_VAL   (65536)
+#define BIT16_VAL   (65536UL)
 
 #define reg_set(var, lable, reg, bit)   \
     do {                                \
@@ -58,6 +58,15 @@ enum {
 
 #define bit_set(reg, bit)    reg |=  (0x1 << bit)
 #define bit_reset(reg, bit)  reg &= ~(0x1 << bit)
+
+#define bit_set_val(reg, zero_val, bit, val)   \
+    reg = (reg & ~(zero_val << 6)) | (val << 6)
+
+#define timer_val_get_hex(THx, TLx, timer_val)  \
+    do {                                        \
+        TLx = timer_val & 0xff;                 \
+        THx = timer_val >> 8;                   \
+    } while(0)
 
 #ifdef __cplusplus
 }

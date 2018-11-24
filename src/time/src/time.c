@@ -27,11 +27,6 @@
 #undef SC_TIME_GB
 
 #define timer_val_get(tim_value_ms) (CFG_SYS_CLK * tim_value_ms) / 1000
-#define timer_val_get_hex(THx, TLx, timer_val)  \
-    do {                                        \
-        TLx = timer_val & 0xff;                 \
-        THx = timer_val >> 8;                   \
-    } while(0)
 
 #define mode_set(tim_mode, bit) TMOD = (TMOD & ~(0x03 << bit)) | tim_mode
 
