@@ -40,30 +40,6 @@ typedef struct {
     int8_t is_rx_ok;		// 接收块完成
 } uart_t;
 
-void uart1_init(void)
-{
-	/*Timer1 as baud rate generator for UART1. */
-	PCON |= 0x80; /*SMOD=1, double baud-rate */
-	TMOD = (TMOD & 0x0fu) | 0x20u; /*Timer1 as 8-bit auto-reload mode.*/
-	TH1 = 255u;
-	TL1 = 255u; /* 11059200/12/16/(256-255) = 57600 */
-	            /* 22118400/12/16/(256-255) = 115200 */
-	TR1 = 1; /*Start Timer1 running.*/
-
-	SCON = 0x50u;/*UART1 at mode 1:8-N-1 57600 or 115200 Enable Receiver.*/
-
-	ES = 1; /*Disable UART1 interrupt.*/
-}
-
-/*implemented for printf() */
-// int putchar(int c)
-// {
-	// SBUF = c;
-	// while (TI == 0);
-	// TI = 0;
-	// return c;
-// }
-
 static uart_t uart_1;
 
 __idata uint8_t rx_buf[UART_RX_TX_LEN];
@@ -71,13 +47,11 @@ __idata uint8_t tx_buf[UART_RX_TX_LEN];
 
 int8_t uart_init(uart_num_t uart_num, uart_conf_t *uart_conf)
 {
-    if (uart_num >= UART_NUM_MAX) {
+    if (uart_num >= UART_NUM_MAX)
         return -1;
-    }
 
-    if (!uart_conf || uart_conf->mode >= UART_MODE_MAX) {
+    if (!uart_conf || uart_conf->mode >= UART_MODE_MAX)
         return -2;
-    }
 
     uart_1.id                     = uart_num;
     uart_1.tx_read                = 0;
@@ -94,44 +68,38 @@ int8_t uart_init(uart_num_t uart_num, uart_conf_t *uart_conf)
 
     switch (uart_num) {
         case UART_NUM_1:
-#if 0
-            reg_set1(uart_conf->polity, INT_POLITY_HIGHT, PS);
-            bit_set_val(SCON, 0x3, 6, uart_conf->mode);
-#else
-            if(uart_conf->polity == INT_POLITY_HIGHT)		PS = 1;	//高优先级中断
-            else									PS = 0;	//低优先级中断
-            SCON = (SCON & 0x3f) | uart_conf->mode;
-#endif
+            reg_reset_all(SCON);
+            bit_set_val(SCON, 6, uart_conf->mode);  // 串口1工作方式1
+            bit_reset(SCON, 5);                     // 不允许多机通信 
+            bit_set(SCON, 4);                       // 允许接收
+            bit_reset(SCON, 1);                     // 清零发送中断标志位
+            bit_reset(SCON, 0);                     // 清零接收中断标志位 
+
             switch (uart_conf->mode) {
                 case UART_MODE_8BIT_BRTx:
                 case UART_MODE_9BIT_BRTx: {
                     if (uart_conf->use_rate == TIM_NUM_1) {
-#if 1
-                        TR1 = 0;
-                        AUXR &= ~0x01;		//S1 BRT Use Timer1;
-                        TMOD &= ~(1<<6);	//Timer1 set As Timer
-                        TMOD &= ~0x30;		//Timer1_16bitAutoReload;
-                        AUXR |=  (1<<6);	//Timer1 set as 1T mode
-                        TH1 = 0xff;
-                        TL1 = 0xe8;
-                        ET1 = 0;	//禁止中断
-                        TMOD &= ~0x40;	//定时
-                        INT_CLKO &= ~0x02;	//不输出时钟
-                        TR1  = 1;
-#else
                         TR1 = 0;
 
-                        bit_set(AUXR, 6);       // 1T模式
-                        bit_reset(AUXR, 0);     // 使用定时器1作为波特率发生器
-                        bit_reset(TMOD, 6);     // 选择定时器模式
+                        reg_reset_all(TMOD);
+                        bit_reset(TMOD, 7);         // 不受外部INT1引脚的控制
+                        bit_reset(TMOD, 6);         // 用作定时器使用 
+                        bit_set_val(TMOD, 4, TIM_MODE_16BitAutoReload);// 16位自动重装模式
+
+                        reg_reset_all(AUXR);
+                        bit_set(AUXR, 6);           // 1T模式
+                        bit_reset(AUXR, 0);         // 定时器1作为串口1的波特率发生器
+
                         bit_reset(INT_CLKO, 1); //不输出时钟
 
-                        bit_set_val(TMOD, 0x3, 4, TIM_MODE_16BitAutoReload);
-                        timer_val_get_hex(TH1, TL1, j); //设置定时器初始值
+                        uint32_t j = (CFG_SYS_CLK / 4) / uart_conf->rate;
+                        if(j >= BIT16_VAL)	
+                            return -3;
+
+                        timer_val_get_hex(TH1, TL1, BIT16_VAL - j); //设置定时器初始值
 
                         ET1 = 0;	            //禁止定时器1中断
                         TR1  = 1;
-#endif
                     } else if (uart_conf->use_rate == TIM_NUM_2) { 
 
                     } else
@@ -147,31 +115,14 @@ int8_t uart_init(uart_num_t uart_num, uart_conf_t *uart_conf)
                     break;
             }
 
-#if 0
+            reg_set1(uart_conf->polity, INT_POLITY_HIGHT, PS);
             reg_set1(uart_conf->is_interrupt, ENABLE, ES);
             reg_set1(uart_conf->rx_enable, ENABLE, REN);
-            bit_set_val(P_SW1, 0x3, 6, uart_conf->port_sw);
+            bit_set_val(P_SW1, 6, uart_conf->port_sw);
             reg_set(uart_conf->is_rxd_txd, ENABLE, PCON2, 4);
-#else
-            if(uart_conf->is_interrupt == ENABLE)	ES = 1;	//允许中断
-            else								ES = 0;	//禁止中断
-            if(uart_conf->rx_enable == ENABLE)	REN = 1;	//允许接收
-            else								REN = 0;	//禁止接收
-            P_SW1 = (P_SW1 & 0x3f) | (uart_conf->port_sw & 0xc0);	//切换IO
-            if(uart_conf->is_rxd_txd == ENABLE)	PCON2 |=  (1<<4);	//内部短路RXD与TXD, 做中继, ENABLE,DISABLE
-            else									PCON2 &= ~(1<<4);
-#endif
-	PCON |= 0x80; /*SMOD=1, double baud-rate */
-	TMOD = (TMOD & 0x0fu) | 0x20u; /*Timer1 as 8-bit auto-reload mode.*/
-	TH1 = 255u;
-	TL1 = 255u; /* 11059200/12/16/(256-255) = 57600 */
-	            /* 22118400/12/16/(256-255) = 115200 */
-	TR1 = 1; /*Start Timer1 running.*/
 
-	SCON = 0x50u;/*UART1 at mode 1:8-N-1 57600 or 115200 Enable Receiver.*/
-
-	ES = 1; /*Disable UART1 interrupt.*/
             break;
+
         default:
             break;
     }
@@ -194,17 +145,17 @@ void uart1_ISR(void) __interrupt 4
 	}
 #endif
 
-	if (TI) {
-        RED_LED = 0;
-		TI = 0;
-
-        if (uart_1.tx_read != uart_1.tx_write) {
-            SBUF = tx_buf[uart_1.tx_read];
-            if (++uart_1.tx_read >= UART_RX_TX_LEN)
-                uart_1.tx_read = 0;
-        } else
-            uart_1.is_tx_busy = 0;
-	}
+	// if (TI) {
+        // RED_LED = 0;
+		// TI = 0;
+//
+        // if (uart_1.tx_read != uart_1.tx_write) {
+            // SBUF = tx_buf[uart_1.tx_read];
+            // if (++uart_1.tx_read >= UART_RX_TX_LEN)
+                // uart_1.tx_read = 0;
+        // } else
+            // uart_1.is_tx_busy = 0;
+	// }
 }
 
 void tx1_write2buff(int8_t ch)

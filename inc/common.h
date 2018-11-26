@@ -40,6 +40,8 @@ enum {
 
 #define BIT16_VAL   (65536UL)
 
+#define reg_reset_all(reg) reg &= ~(0xff) 
+
 #define reg_set(var, lable, reg, bit)   \
     do {                                \
         if (var == lable)               \
@@ -59,8 +61,7 @@ enum {
 #define bit_set(reg, bit)    reg |=  (0x1 << bit)
 #define bit_reset(reg, bit)  reg &= ~(0x1 << bit)
 
-#define bit_set_val(reg, zero_val, bit, val)   \
-    reg = (reg & ~(zero_val << 6)) | (val << 6)
+#define bit_set_val(reg, bit, val) reg |= (val << bit)
 
 #define timer_val_get_hex(THx, TLx, timer_val)  \
     do {                                        \
