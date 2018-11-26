@@ -19,19 +19,33 @@
  */
 #include <stdio.h>
 
-#include "stc15w404as.h"
+#include <gpio/gpio.h>
+#include <int/int.h>
+#include <uart/uart.h>
+#include <time/time.h>
+#include <led-drv/led-drv.h>
 
-#include "time.h"
+#include <sys_tick.h>
+
+#include <common.h>
+#include <stc15wxxxx.h>
 
 void main(void)
 {
+    unsigned long cnt = 0;
+    static unsigned long cnt_old = 0;
+
+    gpio_init_default();
+    sys_tick_init();
+
+    EA = 1;
+    
     while (1) {
-
-        P1_0=0;
-        delay02s();
-
-        P1_0=1;
-        delay02s();
+        cnt = sys_tick_get();
+        if (cnt - cnt_old >= 1000) {
+            cnt_old = cnt;
+            RED_LED = !RED_LED;
+        }
     }
 }
 

@@ -37,7 +37,8 @@ TARGET_PATH ?= $(LIB_DIR)/$(TARGET_LIB)
 # ------
 CFLAGS 	+= -I$(INC_DIR) -I$(TO_TOP_DIR)/$(INC_DIR)
 
-LDFLAGS += -l$(TARGET_LIB) -L$(LIB_DIR)
+LDFLAGS += -l$(TARGET_LIB)
+LDFLAGS += -L$(TO_TOP_DIR)/$(LIB_DIR)
 
 # -------
 # c files
@@ -55,8 +56,12 @@ TST_IHX := $(patsubst %.rel, %.ihx, $(TST_REL))
 TST_OBJ ?= $(TST_REL)
 
 ###########################################
-all: depend $(TARGET_PATH) $(TARGET_DEMO)
+all: init $(TARGET_LIB) $(TARGET_DEMO)
 	$(cp-lib-inc)
+ifneq ($(TOOLS_STCGAL).py, $(wildcard $(TOOLS_STCGAL).py))
+	$(RM) $(TOOLS_STCGAL).py
+	$(LN) $(TO_TOP_DIR)/tools/stcgal/$(TOOLS_STCGAL).py $(TOOLS_STCGAL).py
+endif
 
 include $(TO_TOP_DIR)/configs/com-tar-def.mk
 

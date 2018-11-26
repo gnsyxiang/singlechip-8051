@@ -18,6 +18,9 @@
 #     last modified: 29/10 2018 15:45
 # ===============================================================
 
+clean-main:
+	$(RM) $(OBJ_DIR)/test
+
 clean:
 	$(run-dir-makefile-clean-distclean)
 	$(RM) $(TARGET_DEMO) $(TARGET_DEMO).hex
@@ -26,6 +29,7 @@ clean:
 
 distclean: clean index-clean
 	$(run-dir-makefile-clean-distclean)
+	$(RM) $(TOOLS_STCGAL).py
 	$(RM) $(OBJ_DIR)
 	$(RM) $(LIB_DIR)
 ifneq ($(TARGET)x, singlechip-8051x)
@@ -42,11 +46,34 @@ index-clean:
 	$(RM) tags
 
 .PHONY: all clean distclean debug
+#########################################################
+download-img:
+	./$(TOOLS_STCGAL).py -P stc15 $(TARGET_DEMO)
 
 #########################################################
-depend:
+init: clean-main
+ifneq ($(TARGET)x, singlechip-8051x)
 	$(RM) $(CON_DIR)
 	$(LN) $(TO_TOP_DIR)/$(CON_DIR) $(CON_DIR)
+else
+	$(MKDIR) $(LIB_DIR)
+	$(run-dir-makefile-make)
+endif
+
+init-lib:
+	$(ECHO) $(D)
+	$(MKDIR) $(SRC_DIR)/$(D)
+	$(MKDIR) $(SRC_DIR)/$(D)/$(SRC_DIR) \
+		     $(SRC_DIR)/$(D)/$(INC_DIR) \
+			 $(SRC_DIR)/$(D)/$(TST_DIR)
+	$(CP) $(SRC_DIR)/time/Makefile $(SRC_DIR)/$(D)
+
+#########################################################
+
+$(TARGET_LIB): $(TARGET_PATH) $(TARGET_PATH)-cp
+
+$(TARGET_PATH)-cp:
+	$(cp-lib-inc)
 
 $(TARGET_PATH): $(OBJS)
 	$(ECHO) $(MSG_LD) $@

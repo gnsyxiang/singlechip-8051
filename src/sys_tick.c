@@ -2,10 +2,10 @@
  * 
  * Release under GPLv2.
  * 
- * @file    main.c
+ * @file    sys_tick.c
  * @brief   
  * @author  gnsyxiang <gnsyxiang@163.com>
- * @date    29/10 2018 16:29
+ * @date    23/11 2018 16:14
  * @version v0.0.1
  * 
  * @since    note
@@ -13,40 +13,24 @@
  * 
  *     change log:
  *     NO.     Author              Date            Modified
- *     00      zhenquan.qiu        29/10 2018      create the file
+ *     00      zhenquan.qiu        23/11 2018      create the file
  * 
- *     last modified: 29/10 2018 16:29
+ *     last modified: 23/11 2018 16:14
  */
 #include <stdio.h>
 
 #include <stc15wxxxx.h>
 #include <common.h>
+
 #include <time/time.h>
 
-static int8_t cnt = 0;
-static int8_t cnt_flag = 0;
-static int8_t test = 0;
+#define SC_SYS_TICK_GB
+#include <sys_tick.h>
+#undef SC_SYS_TICK_GB
 
-void timer0_ISR(void) __interrupt 1
-{
-    if (cnt++ >= 10) {
-        cnt = 0;
+static volatile unsigned long __idata g_sys_ticks;
 
-        cnt_flag = 1;
-    }
-}
-
-void timer1_ISR(void) __interrupt 3
-{
-    if (cnt_flag && test++ >= 100) {
-        cnt_flag = 0;
-        test = 0;
-
-        RED_LED = !RED_LED;
-    }
-}
-
-void main(void)
+void sys_tick_init(void)
 {
     timer_init_t timer_0;
 
@@ -57,18 +41,25 @@ void main(void)
     timer_0.tim_clk_source  = TIM_CLK_12T;
     timer_0.tim_cnt_timer   = TIM_TIMER;
     timer_0.tim_clk_out     = DISABLE;
-    timer_0.tim_value_ms    = 10;
+    timer_0.tim_value_ms    = 1;
     timer_0.tim_is_run      = ENABLE;
 
     timer_init(&timer_0);
+}
 
-    timer_0.tim_num         = TIM_NUM_1;
+void timer0_ISR(void) __interrupt 1
+{
+    g_sys_ticks++;
+}
 
-    timer_init(&timer_0);
+unsigned long sys_tick_get(void)
+{
+	unsigned long ticks;
 
-    EA = 1;
+	EA = 0;
+	ticks = g_sys_ticks;
+	EA = 1;
 
-    while (1) {
-    }
+	return ticks;
 }
 
