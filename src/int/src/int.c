@@ -24,7 +24,7 @@
 #include <stc15wxxxx.h>
 
 #define SC_INT_GB
-#include <int/int.h>
+#include "int.h"
 #undef SC_INT_GB
 
 #if 0

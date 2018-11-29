@@ -42,7 +42,7 @@ RM 		:= rm -rf
 ECHO 	:= echo
 MKDIR 	:= mkdir -p
 LN 		:= ln -s
-CP 		:= cp -ar
+CP 		:= cp -a
 
 TAR_XJVF := tar xjvf
 
