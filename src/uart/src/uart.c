@@ -41,7 +41,7 @@ void uart1_init(void)
 }
 
 /*implemented for printf() */
-int putchar(int c)
+char putchar(char c)
 {
 	SBUF = c;
 	while (TI == 0);
