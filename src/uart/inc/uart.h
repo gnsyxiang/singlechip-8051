@@ -42,7 +42,7 @@ extern "C" {
 #define T2R         (AUXR & (0x1 << 7))
 
 SC_UART_EX void uart1_init(void);
-SC_UART_EX int putchar(int c);
+SC_UART_EX char putchar(char c);
 
 #ifdef __cplusplus
 }
