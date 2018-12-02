@@ -156,12 +156,20 @@ int8_t timer_init(timer_init_t *timer_x)
     return 0;
 }
 
-void delay02s(void)
+void delay_1ms(void)
 {
-    unsigned char i,j,k;
+	unsigned char i, j;
 
-    for(i=250; i>0; i--)
-        for(j=250; j>0; j--)
-            for(k=248; k>0; k--);
+	i = 11;
+	j = 190;
+	do {
+		while (--j);
+	} while (--i);
+}
+
+void delay_ms(unsigned int ms)
+{
+	for(;ms;ms--)
+		delay_1ms();
 }
 
