@@ -29,10 +29,10 @@ int main(void)
 
     while (1) {
         led_on();
-        delay02s();
+        delay_ms(500);
 
         led_off();
-        delay02s();
+        delay_ms(500);
     }
 
     return 0;
