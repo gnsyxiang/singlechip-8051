@@ -94,7 +94,8 @@ typedef struct timer_init {
 
 SC_TIME_EX int8_t timer_init(timer_init_t *timer_init);
 
-SC_TIME_EX void delay02s(void);
+SC_TIME_EX void delay_1ms(void);
+SC_TIME_EX void delay_ms(unsigned int ms);
 
 #ifdef __cplusplus
 }

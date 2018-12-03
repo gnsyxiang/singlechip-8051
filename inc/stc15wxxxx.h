@@ -221,6 +221,8 @@ SBIT  (PX0,  _IP, 0);	    //
 #define _IP     (0xB8)
 #define _SADEN  (0xB9)
 #define _SADDR  (0xA9)
+#define _P_SW1  (0xA2)
+#define _PCON2  (0x97)
 
 SFR   (SCON, _SCON);
 SFR   (PCON, _PCON);
@@ -228,6 +230,8 @@ SFR   (SBUF, _SBUF);
 SFR   (S2BUF, _S2BUF);
 SFR   (S3BUF, _S3BUF);
 SFR   (S4BUF, _S4BUF);
+SFR   (P_SW1, _P_SW1);
+SFR   (PCON2, _PCON2);
 
 SBIT  (SM0, _SCON, 7);	    //
 SBIT  (SM1, _SCON, 6);	    //

@@ -19,46 +19,58 @@
  */
 #include <stdio.h>
 
+#include <common.h>
 #include <stc15wxxxx.h>
 
-// int main(void)
+#include <uart/uart.h>
+#include <time/time.h>
+
+// char putchar(char ch)
 // {
-    // return 0;
+    // tx1_write2buff(ch);
+//
+    // return ch;
 // }
 
-//串口通讯实验
-//只发数据
-//波特率9600
-//主频11.0592
-
-char  __code  MESSAGE[]= "123456";
-
-void delay(unsigned int m)
-    {
-	  int  a=0,b=0;
-	  for(a=0;a<500;a++)
-	  for(b=0;b<m;b++);
-
-	}
-
-
-void ISP_Check()
+#if 1
+char putchar(char c)
 {
-  unsigned char a;
+    SBUF = c;
+    while (TI == 0);
+    TI = 0;
+    return c;
+}
 
-	  a=0;
-	   while(MESSAGE[a]!= '\0')
-   	   {
-		SBUF = MESSAGE[a];	        //SUBF接受/发送缓冲器(又叫串行通信特殊功能寄存器)
-         while(!TI);				// 等特数据传送	(TI发送中断标志)
-		 TI = 0;					// 清除数据传送标志
+uint8_t main(void)
+{
+    RED_LED = 1;
+    uart_conf_t uart_conf;
 
-		a++;					    // 下一个字符
-       }
+    uart_conf.mode              = UART_MODE_8BIT_BRTx;
+    uart_conf.more_communicate  = DISABLE;
+    uart_conf.rx_enable         = ENABLE;
+    uart_conf.is_interrupt      = ENABLE;
 
+    uart_conf.rate              = 115200UL;
+    uart_conf.use_rate          = TIM_NUM_1;
+    uart_conf.rate_double       = DISABLE;
 
-     }
+    uart_conf.polity            = INT_POLITY_HIGHT;
+    uart_conf.port_sw           = UART1_PORT_SW_P30_P31;
+    uart_conf.is_rxd_txd        = DISABLE;
 
+    uart_init(UART_NUM_1, &uart_conf);
+
+    EA   = 1;        // 开总中断
+
+    putchar('b');
+
+    return 0;
+}
+
+#else
+
+char  __code  MESSAGE[]= "我爱单片机 ";	//定义到程序空间中
 
 
 //真对 IAP15W4K61S4   STC15W4K56S4 系列 IO口初始化
@@ -85,29 +97,53 @@ void IO_init(void)
   P4M1 = 0X00;
 }
 
+void delay(unsigned int m)				//延时函数
+    {
+	  int  a=0,b=0;
+	  for(a=0;a<500;a++)
+	  for(b=0;b<m;b++);
 
-void main()
+	}
+
+void ISP_Check()						//串口发送调用函数
 {
-    IO_init();				   //真对 IAP15W4K61S4  IO口初始化
-    P5_5=1;
+  unsigned char a;
 
-    SCON = 0x50;       //REN=1允许串行接受状态，串口工作模式2
-    TMOD= 0x20;      //定时器工作方式2       8位 自动重装载定时器  实现波特率
+     IO_init();  //真对 IAP15W4K61S4  IO口初始化
 
-    // AUXR=0X40;		 //开启1T模式
+	  a=0;
+	   while(MESSAGE[a]!= '\0')
+   	   {
+		SBUF = MESSAGE[a];	        //SUBF接受/发送缓冲器(又叫串行通信特殊功能寄存器)
+         while(!TI);				// 等特数据传送	(TI发送中断标志)
+		 TI = 0;					// 清除数据传送标志
 
+		a++;					    // 下一个字符
+       }
+}
 
-    TH1 =TL1= 0xDC;			//  设置波特率为9600  公式 TH1=256-(11059200/32/9600)=256-36=220  0xDC
-    // 如有不明白请查 STC15手册上有详细说明
+void main() 			 //主函数
+{
+
+    SCON=0x50;        //REN=1允许串行接受状态，串口工作模式2
+    TMOD= 0x00;       //定时器1为模式0（16位自动重载）
+    AUXR=0X40;		 //开启1T模式
+    TL1=(65535-(11059200/4/115200)) & 0xff;    //设置波特率重装值
+    TH1=(65535-(11059200/4/115200))>>8;
 
     TR1  = 1;        //开启定时器1
     EA   = 1;        // 开总中断
+    int8_t cnt = 0;
 
-    while(1)
-    {
-        ISP_Check();
-        delay(1000);
+    while(1) {
+        if (cnt++ > 3) {
+            TR1 = 0;
+            RED_LED = 0;
+            break;
+        }
+        ISP_Check();	 //发送数据
+        delay(1000);	 //延时
     }
-
 }
+#endif
 

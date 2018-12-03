@@ -80,6 +80,8 @@ else
 	CFLAGS     +=
 endif
 
+DEBUG_SYSTEM := mac
+
 TARGET_SYSTEM ?= c51
 
 ifeq ($(TARGET_SYSTEM)x, c51x)

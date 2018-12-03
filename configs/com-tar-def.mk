@@ -48,7 +48,11 @@ index-clean:
 .PHONY: all clean distclean debug
 #########################################################
 download-img:
+ifneq ($(DEBUG_SYSTEM)x, macx)
+	./$(TOOLS_STCGAL).py -P stc15 -p /dev/tty.wchusbserial14320 $(TARGET_DEMO)
+else
 	./$(TOOLS_STCGAL).py -P stc15 $(TARGET_DEMO)
+endif
 
 #########################################################
 init: clean-main
