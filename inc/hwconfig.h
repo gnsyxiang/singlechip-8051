@@ -26,6 +26,7 @@ extern "C" {
 
 #define CFG_SYS_CLK 	(11059200UL)
 // #define CFG_SYS_CLK 	(22118400UL)
+// #define CFG_SYS_CLK 	(24000000UL)
 
 #define CFG_SYS_TICK_MS (1)
 
